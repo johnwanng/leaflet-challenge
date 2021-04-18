@@ -17,24 +17,45 @@ var myMap = L.map("map", {
   // Use this link to get the geojson data.
   var url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_week.geojson";
   
-  // Define a markerSize function that will give each city a different radius based on its population
-    function markerSize(population) {
-        return population / 40;
+  // Define a markerSize function that will give each city a different radius based on its magnitude
+  function markerSize(magnitude) {
+        return magnitude * 1500/600;
   }
-  
+
+
+
+/* 
+ * Create a circle symbol to use with a GeoJSON layer instead of the default blue marker
+ */
+
+// This will be run when L.geoJSON creates the point layer from the GeoJSON data.
+function createCircleMarker( feature, latlng ){
+  console.log(feature.properties.mag);
+  // Change the values of these options to change the symbol's appearance
+  var options = {
+    radius: markerSize(feature.properties.mag),
+    fillColor: "lightgreen",
+    color: "black",
+    weight: 1,
+    opacity: 1,
+    fillOpacity: 0.8
+  }
+  var markerInfo = 'Location: ' + feature.properties.place + '<br>' + 'Magnitude: ' + feature.properties.mag;
+  return L.circleMarker( latlng, options ).addTo(myMap).bindPopup(markerInfo);
+}
+
 
   // Grabbing our GeoJSON data..
   d3.json(url, function(data) {
     // Creating a GeoJSON layer with the retrieved data
+
+    L.geoJSON( data, {
+      pointToLayer: createCircleMarker // Call the function createCircleMarker to create the symbol for this layer
+    }).addTo( myMap )
     //L.geoJson(data).addTo(myMap);
-    L.circle(data[i].location, {
-        fillOpacity: 0.75,
-        color: "white",
-        fillColor: "purple",
-        // Setting our circle's radius equal to the output of our markerSize function
-        // This will make our marker's size proportionate to its population
-        radius: markerSize(data[i].population)
-      }).bindPopup("<h1>" + data[i].name + "</h1> <hr> <h3>Population: " + data[i].population + "</h3>").addTo(myMap);
     
-    console.log(data.metadata.title);
+    //console.log(data.metadata.title);
+    //console.log(data);
+    //createCircle(data.features);
+
   });
