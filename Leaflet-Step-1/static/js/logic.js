@@ -41,14 +41,14 @@ function createCircleMarker( feature, latlng ){
   var options = {
     radius: markerSize(feature.properties.mag),
     fillColor: colour,
-    color: "black",
+    color: colour,
     weight: 1,
     opacity: 1,
     fillOpacity: 0.8
   }
 
   // Prepare mark info for the earthquake location
-  var markerInfo = 'Location: ' + feature.properties.place + '<br>' + 'Magnitude: ' + feature.properties.mag + colour;
+  var markerInfo = 'Location: ' + feature.properties.place + '<br>' + 'Magnitude: ' + feature.properties.mag + '<br>' + Date(feature.properties.time);
   // Add marker to map
   return L.circleMarker( latlng, options ).addTo(myMap).bindPopup(markerInfo);
 }
@@ -66,8 +66,7 @@ d3.json(url, function(data) {
   var legend = L.control({position: 'bottomright'});
     legend.onAdd = function (map) {
         var div = L.DomUtil.create('div', 'info legend'),
-            magnitude = [0, 1, 2, 3, 4, 5],
-            labels = [];
+            magnitude = [0, 1, 2, 3, 4, 5];
     
         // loop through our magnitude intervals and generate a label with a colored square for each interval
         for (var i = 0; i < magnitude.length; i++) {
